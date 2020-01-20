@@ -8,7 +8,7 @@
 
     ChallengeCtrl.$inject = ['utilities', 'loaderService', '$scope', '$state', '$http', '$stateParams', '$rootScope', 'Upload', '$interval', '$mdDialog', 'moment', '$location', '$anchorScroll', '$timeout'];
 
-    function ChallengeCtrl(utilities, loaderService, $scope, $state, $http, $stateParams, $rootScope, Upload, $interval, $mdDialog, moment, $location, $anchorScroll, $timeout) {
+    function ChallengeCtrl(utilities, loaderService, $scope, $state, $http, $stateParams, $rootScope, Upload, $interval, $mdDialog, moment, $location, $anchorScroll, $timeout, $controller) {
         var vm = this;
         vm.challengeId = $stateParams.challengeId;
         vm.phaseId = null;
@@ -342,11 +342,13 @@
                             utilities.hideLoader();
                         },
                         onError: function(response) {
+                            if ($state.current.title == "Participate") {
                             var error = response.data;                            
                             $rootScope.notify("error", error.detail);
                             vm.emailVerification = false;
                             vm.emailError = error.detail;
                             utilities.hideLoader();
+                            }
                         }
                     };
                     utilities.sendRequest(parameters);
@@ -1896,6 +1898,7 @@
         vm.challengePhaseDialog = function(ev, phase) {
             vm.page.challenge_phase = phase;
             vm.page.max_submissions_per_day = phase.max_submissions_per_day;
+            vm.page.max_submissions_per_month = phase.max_submissions_per_month;
             vm.phaseStartDate = moment(phase.start_date);
             vm.phaseEndDate = moment(phase.end_date);
             vm.testAnnotationFile = null;
@@ -1921,6 +1924,7 @@
                 formData.append("start_date", vm.phaseStartDate.toISOString());
                 formData.append("end_date", vm.phaseEndDate.toISOString());
                 formData.append("max_submissions_per_day", vm.page.challenge_phase.max_submissions_per_day);
+                formData.append("max_submissions_per_month", vm.page.challenge_phase.max_submissions_per_month);
                 formData.append("max_submissions", vm.page.challenge_phase.max_submissions);
                 if (vm.testAnnotationFile) {
                     formData.append("test_annotation", vm.testAnnotationFile);
